@@ -15,7 +15,7 @@
 	<description>nowcoder community</description>
 
 	<properties>
-		<java.version>12</java.version>
+		<java.version>11</java.version>
 	</properties>
 
 	<dependencies>
@@ -76,6 +76,12 @@
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
 			<version>1.2.58</version>
+		</dependency>
+
+	<!--添加 redis 相关依赖-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 
 	</dependencies>
