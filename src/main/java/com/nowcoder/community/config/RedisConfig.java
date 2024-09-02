@@ -17,11 +17,12 @@ public class RedisConfig {
 
         // 设置key的序列化方式
         redisTemplate.setKeySerializer(RedisSerializer.string());
-        // 设置alue的序列化方式
+        // 设置value的序列化方式
         redisTemplate.setValueSerializer(RedisSerializer.json());
         redisTemplate.setHashKeySerializer(RedisSerializer.string());
         redisTemplate.setHashValueSerializer(RedisSerializer.json());
 
+        // 进行初始化
         redisTemplate.afterPropertiesSet();
         return redisTemplate;
     }
