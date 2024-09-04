@@ -2,6 +2,7 @@ package com.nowcoder.community.controller;
 
 import com.nowcoder.community.annotation.LoginRequired;
 import com.nowcoder.community.entity.User;
+import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.service.UserService;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
@@ -10,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,6 +46,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private LikeService likeService;
 
     @Autowired
     private HostHolder hostHolder;
@@ -81,7 +86,7 @@ public class UserController {
             throw new RuntimeException("上传文件失败,服务器发生异常!", e);
         }
 
-        // 更新当前用户的头像的路径(web访问路径)
+        // 更新当前用户的头像的路径(web访问路径), 访问这个路径后会调用下面的 getHeader 方法, 重新定位到图片的地址, 然后通过输出流输出到前端页面
         // http://localhost:8080/community/user/header/xxx.png
         User user = hostHolder.getUser();
         String headerUrl = domain + contextPath + "/user/header/" + fileName;
@@ -90,6 +95,8 @@ public class UserController {
         return "redirect:/index";
     }
 
+
+    // 请求头像链接 通过输出流 输出到前端页面
     @RequestMapping(path = "/header/{fileName}", method = RequestMethod.GET)
     public void getHeader(@PathVariable("fileName") String fileName, HttpServletResponse response) {
         // 服务器存放路径
@@ -110,6 +117,23 @@ public class UserController {
         } catch (IOException e) {
             logger.error("读取头像失败: " + e.getMessage());
         }
+    }
+
+    // 定位到个人首页
+    @RequestMapping(path = "profile/{userId}", method = RequestMethod.GET)
+    public String getProfilePage(@PathVariable("userId") int userId, Model model){
+        User user = userService.findUserById(userId);
+        // 判断是否有该用户
+        if (user == null){
+            throw new RuntimeException("该用户不存在");
+        }
+        // 用户添加到上下文中
+        model.addAttribute("user", user);
+        // 该用户收到的点赞
+        int likeCount = likeService.findUserLikeCount(userId);
+        model.addAttribute("likeCount", likeCount);
+
+        return "/site/profile";
     }
 
 }

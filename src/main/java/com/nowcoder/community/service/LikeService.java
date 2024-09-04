@@ -35,10 +35,12 @@ public class LikeService {
                 // 如果已经点赞, 则再次点击相当于三取消点赞
                 if (isMember) {
                     operations.opsForSet().remove(entityLikeKey, userId);
+                    // 发布该帖子的用户收到的赞减去一
                     operations.opsForValue().decrement(userLikeKey);
                 } else {
                     // 如果没有点赞, 则点赞
                     operations.opsForSet().add(entityLikeKey, userId);
+                    // 发布该实体的用户得到的赞加1
                     operations.opsForValue().increment(userLikeKey);
                 }
 
@@ -59,7 +61,7 @@ public class LikeService {
         return redisTemplate.opsForSet().isMember(entityLikeKey, userId) ? 1 : 0;
     }
 
-    // 查询某个用户获得的赞
+    // 查询某个用户获得的赞的数量
     public int findUserLikeCount(int userId) {
         String userLikeKey = RedisKeyUtil.getUserLikeKey(userId);
         Integer count = (Integer) redisTemplate.opsForValue().get(userLikeKey);
