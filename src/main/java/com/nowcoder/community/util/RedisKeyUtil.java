@@ -9,8 +9,11 @@ public class RedisKeyUtil {
     private static final String PREFIX_FOLLOWEE = "followee";
     // 粉丝
     private static final String PREFIX_FOLLOWER = "follower";
+    // 验证码 key
     private static final String PREFIX_KAPTCHA = "kaptcha";
+    // 登陆凭证
     private static final String PREFIX_TICKET = "ticket";
+    // 用户信息
     private static final String PREFIX_USER = "user";
 
     // 某个实体的赞(可能是 帖子、评论、评论的评论) 使用set存储所有给该实体点赞的用户id
