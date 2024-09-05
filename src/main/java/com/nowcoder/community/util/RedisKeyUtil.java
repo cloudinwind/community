@@ -5,7 +5,9 @@ public class RedisKeyUtil {
     private static final String SPLIT = ":";
     private static final String PREFIX_ENTITY_LIKE = "like:entity";
     private static final String PREFIX_USER_LIKE = "like:user";
+    // 关注
     private static final String PREFIX_FOLLOWEE = "followee";
+    // 粉丝
     private static final String PREFIX_FOLLOWER = "follower";
     private static final String PREFIX_KAPTCHA = "kaptcha";
     private static final String PREFIX_TICKET = "ticket";
@@ -25,12 +27,15 @@ public class RedisKeyUtil {
 
     // 某个用户关注的实体
     // followee:userId:entityType -> zset(entityId,now)
+    // 使用排序集合存储 某个用户 关注的所有这种实体类型的 实体 的id
     public static String getFolloweeKey(int userId, int entityType) {
         return PREFIX_FOLLOWEE + SPLIT + userId + SPLIT + entityType;
     }
 
     // 某个实体拥有的粉丝
     // follower:entityType:entityId -> zset(userId,now)
+    // 使用排序集合存储 这个实体拥有的 所有粉丝的 id, 使用时间排序
+    // 或者说使用排序集合存储 关注这个实体 的所有 用户的id
     public static String getFollowerKey(int entityType, int entityId) {
         return PREFIX_FOLLOWER + SPLIT + entityType + SPLIT + entityId;
     }
