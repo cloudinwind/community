@@ -1,5 +1,7 @@
 package com.nowcoder.community.util;
 
+import org.apache.kafka.common.protocol.types.Field;
+
 public interface CommunityConstant {
 
     /**
@@ -56,6 +58,11 @@ public interface CommunityConstant {
      * 主题: 关注
      */
     String TOPIC_FOLLOW = "follow";
+
+    /**
+     * 主题：发布帖子
+     */
+    String TOPIC_PUBLISH = "publish";
 
     /**
      * 系统用户ID
