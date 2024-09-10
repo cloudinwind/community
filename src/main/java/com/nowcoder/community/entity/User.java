@@ -9,7 +9,10 @@ public class User {
     private String password;
     private String salt;
     private String email;
+    // type 表示权限
+    // 0： 普通用户 1：超级管理员 2：版主
     private int type;
+    // status 是否激活
     private int status;
     private String activationCode;
     private String headerUrl;
