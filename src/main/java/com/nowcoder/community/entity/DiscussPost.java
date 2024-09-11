@@ -28,17 +28,18 @@ public class DiscussPost {
     @Field(type = FieldType.Text, analyzer = "ik_max_word", searchAnalyzer = "ik_smart")
     private String content;
 
-    // type: 0 正常帖子 1 置顶帖子
+    // type: 0 正常帖子, 1 置顶帖子
     @Field(type = FieldType.Integer)
     private int type;
 
-    // status: 0 正常帖子 1 加精帖子
+    // status: 0 正常帖子, 1 加精帖子, 2 删除
     @Field(type = FieldType.Integer)
     private int status;
 
     @Field(type = FieldType.Date)
     private Date createTime;
 
+    // 帖子的评论数量
     @Field(type = FieldType.Integer)
     private int commentCount;
 

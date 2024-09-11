@@ -45,6 +45,8 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
                 // 构建用户认证的结果,并存入SecurityContext,以便于Security进行授权.
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         user, user.getPassword(), userService.getAuthorities(user.getId()));
+
+                System.out.println("权限："+ userService.getAuthorities(user.getId()).toString());
                 SecurityContextHolder.setContext(new SecurityContextImpl(authentication));
             }
         }
