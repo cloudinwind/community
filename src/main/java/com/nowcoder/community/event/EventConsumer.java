@@ -64,6 +64,7 @@ public class EventConsumer implements CommunityConstant {
     private String shareBucketName;
 
     @Autowired
+    // 定义定时任务线程池
     private ThreadPoolTaskScheduler taskScheduler;
 
 
@@ -172,10 +173,12 @@ public class EventConsumer implements CommunityConstant {
             logger.error("生成长图失败: " + e.getMessage());
         }
 
-        // 启用定时器,监视该图片,一旦生成了,则上传至七牛云.
-//        UploadTask task = new UploadTask(fileName, suffix);
-//        Future future = taskScheduler.scheduleAtFixedRate(task, 500);
-//        task.setFuture(future);
+
+        // 创建一个上传任务
+        UploadTask task = new UploadTask(fileName, suffix);
+        //  启用定时器,监视该图片,一旦生成了,则上传至七牛云.
+        Future future = taskScheduler.scheduleAtFixedRate(task, 500);
+        task.setFuture(future);
     }
 
     class UploadTask implements Runnable {
@@ -227,11 +230,11 @@ public class EventConsumer implements CommunityConstant {
                 Auth auth = Auth.create(accessKey, secretKey);
                 String uploadToken = auth.uploadToken(shareBucketName, fileName, 3600, policy);
                 // 指定上传机房
-                UploadManager manager = new UploadManager(new Configuration(Zone.zone1()));
+                UploadManager manager = new UploadManager(new Configuration(Zone.zone0()));
                 try {
                     // 开始上传图片
                     Response response = manager.put(
-                            path, fileName, uploadToken, null, "image/" + suffix, false);
+                            path, fileName, uploadToken, null, "image/" + "png", false);
                     // 处理响应结果
                     JSONObject json = JSONObject.parseObject(response.bodyString());
                     if (json == null || json.get("code") == null || !json.get("code").toString().equals("0")) {
