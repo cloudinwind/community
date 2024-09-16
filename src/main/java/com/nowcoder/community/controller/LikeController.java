@@ -7,12 +7,15 @@ import com.nowcoder.community.service.LikeService;
 import com.nowcoder.community.util.CommunityConstant;
 import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
+import com.nowcoder.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.lang.ref.PhantomReference;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +27,9 @@ public class LikeController implements CommunityConstant {
 
     @Autowired
     private EventProducer eventProducer;
+
+    @Autowired
+    private RedisTemplate  redisTemplate;
 
     @Autowired
     private HostHolder hostHolder;
@@ -56,6 +62,14 @@ public class LikeController implements CommunityConstant {
                     .setData("postId", postId); // 帖子id
             eventProducer.fireEvent(event);
         }
+
+        // 判断是否是对帖子点赞
+        if (entityType == ENTITY_TYPE_POST){
+            // 给帖子点赞 这个帖子的热度分数需要改变, 因此将这个帖子的id存储 Redis 缓存中, 然后定时任务统一进行热度分数的修改
+            String redisKey = RedisKeyUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(redisKey, postId);
+        }
+
         return CommunityUtil.getJSONString(0, null, map);
     }
 

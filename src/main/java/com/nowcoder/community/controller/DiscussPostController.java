@@ -11,6 +11,7 @@ import com.nowcoder.community.util.CommunityUtil;
 import com.nowcoder.community.util.HostHolder;
 import com.nowcoder.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +41,9 @@ public class DiscussPostController implements CommunityConstant {
     private LikeService likeService;
 
     @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
     private EventProducer eventProducer;
 
     @RequestMapping(path = "/add", method = RequestMethod.POST)
@@ -64,6 +68,10 @@ public class DiscussPostController implements CommunityConstant {
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(post.getId());
         eventProducer.fireEvent(event);
+
+        // 发布帖子后需要为帖子初始化一个热度分数，也可以理解为这个帖子的热度分数需要改变, 因此将这个帖子的id存储 Redis 缓存中, 然后定时任务统一进行热度分数的修改
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey, post.getId());
 
         // 报错的情况,将来统一处理.
         return CommunityUtil.getJSONString(0, "发布成功!");
@@ -204,9 +212,11 @@ public class DiscussPostController implements CommunityConstant {
                 .setEntityId(id);
         eventProducer.fireEvent(event);
 
-        // 计算帖子分数
-//        String redisKey = RedisKeyUtil.getPostScoreKey();
-//        redisTemplate.opsForSet().add(redisKey, id);
+        // 加精后 这个帖子的热度分数需要改变, 因此将这个帖子的id存储 Redis 缓存中, 然后定时任务统一进行热度分数的修改
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey, id);
+
+
         return CommunityUtil.getJSONString(0);
     }
 

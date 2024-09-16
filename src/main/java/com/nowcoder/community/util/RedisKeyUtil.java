@@ -86,7 +86,7 @@ public class RedisKeyUtil {
         return PREFIX_DAU + SPLIT + startDate + SPLIT + endDate;
     }
 
-    // 帖子分数
+    // 帖子分数 其实更多是记录产生变化的帖子, value 为产生变化的帖子的id
     public static String getPostScoreKey() {
         return PREFIX_POST + SPLIT + "score";
     }
